@@ -16,6 +16,7 @@
 import logging
 
 import gym
+from gym.utils import seeding
 from pysc2.env import sc2_env
 from pysc2.env.environment import StepType
 from pysc2.lib import actions
@@ -44,6 +45,10 @@ class SC2GameEnv(gym.Env):
         self._num_step = 0
         self._episode_reward = 0
         self._total_reward = 0
+
+    def _seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
 
     def _step(self, action):
         return self._safe_step(action)
@@ -82,6 +87,9 @@ class SC2GameEnv(gym.Env):
         obs = self._env.reset()[0]
         self.available_actions = obs.observation['available_actions']
         return obs
+
+    def _render(self, mode, close=True):
+        logger.info("Asked to render with close: %d.", close)
 
     def save_replay(self, replay_dir):
         self._env.save_replay(replay_dir)
